@@ -44,7 +44,7 @@ class KeyTest(unittest.TestCase):
         message = self.alice.get_message()
         alice_signed_message = self.alice.get_private_key().sign(message)
         with self.assertRaises(BadSignatureError) as cm:
-            cm.expected.__name__ = "Bob should  not be able to verify Alice's signed message using" \
-                                   "using his key own public key."
+            cm.expected.__name__ = "Bob should not be able to verify Alice's signed message" \
+                                   "using his own public key."
 
             self.bob.get_public_key().verify(alice_signed_message, message)
