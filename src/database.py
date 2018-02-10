@@ -12,7 +12,7 @@ TABLE_NAME = "User"
 
 CREATE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS {table_name}
-    (username text, password text)
+    (username TEXT NOT NULL, password TEXT NOT NULL, PRIMARY KEY(username))
 """.format(table_name=TABLE_NAME)
 
 FIND_USER = """
