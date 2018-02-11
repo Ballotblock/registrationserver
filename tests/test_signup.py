@@ -18,7 +18,7 @@ class SignupTest(unittest.TestCase):
         self.user_data = {
             "username": "Robert');DROP TABLE Users",
             "password": "https://xkcd.com/327/",
-            "test_database": True
+                        "account_type": "voter",
         }
 
     def test_sign_up(self):
@@ -26,6 +26,11 @@ class SignupTest(unittest.TestCase):
                                headers={'Content-Type': 'application/json'},
                                data=json.dumps(self.user_data))
 
-        assert result.status_code == httpcode.SIGNUP_OK.code and \
-               result.data.decode('utf-8') == httpcode.SIGNUP_OK.message, \
-            "Expected {0}, found {1}".format(httpcode.SIGNUP_OK, (result.response, result.status_code))
+        expectedCode = httpcode.SIGNUP_OK.code
+        expectedMessage = httpcode.SIGNUP_OK.message
+        actualCode = result.status_code
+        actualMessage = result.data.decode('utf-8')
+
+        assert actualCode == expectedCode and \
+               actualMessage == expectedMessage, \
+            "Expected ({0}, {1}) got ({2}, {3})".format(expectedMessage, expectedCode, actualMessage, actualCode)

@@ -8,6 +8,7 @@
 import unittest
 from src.database import Database
 from src.database import UseMemory
+from src.account_types import AccountType
 
 
 class DatabaseTest(unittest.TestCase):
@@ -19,13 +20,15 @@ class DatabaseTest(unittest.TestCase):
         self.user = {
             "username": "Robert');DROP TABLE Users",
             "password": "https://xkcd.com/327/",
-            "test_database": True
+            "account_type": "voter",
         }
 
         self.non_existent_user = "Sam"
 
     def test_add_find_user(self):
-        assert self.db.add_user(self.user['username'], self.user['password']), \
+        assert self.db.add_user(self.user['username'],
+                                self.user['password'],
+                                AccountType[self.user['account_type']]),\
             "Adding user to empty database should work."
 
         assert self.db.find_user(self.user['username']), \
@@ -34,7 +37,9 @@ class DatabaseTest(unittest.TestCase):
         assert not self.db.find_user(self.non_existent_user), \
             "Database does not find non-existing user"
 
-        assert not self.db.add_user(self.user['username'], self.user['password']), \
+        assert not self.db.add_user(self.user['username'],
+                                    self.user['password'],
+                                    AccountType[self.user['account_type']]), \
             "Database should return false on request to add an existing user."
 
     @classmethod
