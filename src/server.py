@@ -12,6 +12,7 @@ from flask import Flask
 
 from src.database import Database
 from src.database import UseMemory
+from src.account_types import AccountType
 from src import httpcode
 
 URL = "0.0.0.0"
@@ -33,17 +34,26 @@ def signup() -> httpcode.HttpCode:
     {
         "username": "User",
         "password": "Password",
+        "account_type": "voter" or "election_creator",
     }
     :return An HttpCode with the message + status of the request
     """
+
     content = request.get_json(silent=True, force=True)
     if content is None:
         return httpcode.MISSING_OR_MALFORMED_JSON
 
-    if "username" not in content or "password" not in content:
+    if "username" not in content or \
+       "password" not in content or \
+       "account_type" not in content:
         return httpcode.SIGNUP_MISSING_PARAMETERS
 
-    if not db.add_user(content['username'], content['password']):
+    if not AccountType.isValidType(content['account_type']):
+        return httpcode.SIGNUP_INVALID_ACCOUNT_TYPE
+
+    if not db.add_user(content['username'],
+                       content['password'],
+                       AccountType[content['account_type']]):
         return httpcode.USER_ALREADY_EXISTS
 
     return httpcode.SIGNUP_OK

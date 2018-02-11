@@ -6,13 +6,17 @@
 
 from typing import Optional
 from passlib.hash import argon2
+from src.account_types import AccountType
 import sqlite3
 
 TABLE_NAME = "User"
 
 CREATE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS {table_name}
-    (username TEXT NOT NULL, password TEXT NOT NULL, PRIMARY KEY(username))
+    (username TEXT NOT NULL,
+     password TEXT NOT NULL,
+     account_type INT NOT NULL,
+     PRIMARY KEY(username))
 """.format(table_name=TABLE_NAME)
 
 FIND_USER = """
@@ -20,8 +24,8 @@ SELECT * FROM {table_name} WHERE username=?
 """.format(table_name=TABLE_NAME)
 
 ADD_USER = """
-INSERT INTO {table_name}(username, password)
- VALUES (?, ?)
+INSERT INTO {table_name}(username, password, account_type)
+ VALUES (?, ?, ?)
 """.format(table_name=TABLE_NAME)
 
 UseMemory = ":memory:"
@@ -41,18 +45,19 @@ class Database:
             return None
         return result
 
-    def add_user(self, username: str, password: str) -> bool:
+    def add_user(self, username: str, password: str, account_type: AccountType) -> bool:
         """
         Add a user to the database. Refuses if the username
         is already in the database.
         :param username:
         :param password:
+        :param account_type:
         :return: False if username already exists, True otherwise
         """
         if self.find_user(username) is not None:
             return False
 
-        self.cursor.execute(ADD_USER, (username, argon2.hash(password)))
+        self.cursor.execute(ADD_USER, (username, argon2.hash(password), account_type.value))
         return True
 
     def close(self) -> None:

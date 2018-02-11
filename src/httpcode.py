@@ -5,6 +5,7 @@
 #     Samuel Vargas
 #
 
+from src.account_types import AccountType
 from typing import NamedTuple
 from collections import namedtuple
 from flask_api import status
@@ -22,7 +23,11 @@ MISSING_OR_MALFORMED_JSON = \
     _httpcode("JSON was not provided or is non parseable", status.HTTP_400_BAD_REQUEST)
 
 SIGNUP_MISSING_PARAMETERS = \
-    _httpcode("Missing 'Username' or 'Password'", status.HTTP_400_BAD_REQUEST)
+    _httpcode("Missing 'username', 'password', or 'account_type'", status.HTTP_400_BAD_REQUEST)
+
+SIGNUP_INVALID_ACCOUNT_TYPE = \
+    _httpcode("'account_type' was sent but was invalid, valid options are: {0}"
+              .format(AccountType.getEnumsAsList()), status.HTTP_400_BAD_REQUEST)
 
 USER_ALREADY_EXISTS = \
     _httpcode("Cannot signup, username already exists.", status.HTTP_409_CONFLICT)
