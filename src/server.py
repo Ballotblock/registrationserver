@@ -27,6 +27,13 @@ db = Database(UseMemory)
 
 
 
+# Quick testing to see if server is live
+@app.route("/")
+def index():
+    return "BallotBlock Registration Server"
+    
+
+
 @app.route("/api/account", methods=["POST"])
 def signup() -> httpcode.HttpCode:
     """
