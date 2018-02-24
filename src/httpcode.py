@@ -3,7 +3,7 @@
 # src/httpcode.py
 # Authors:
 #     Samuel Vargas
-#
+#     
 
 from src.account_types import AccountType
 from typing import NamedTuple
@@ -16,7 +16,6 @@ _httpcode = namedtuple("httpcode", ("message", "code"))
 # Successful (2xx)
 SIGNUP_OK = \
     _httpcode("Signup successfully completed.", status.HTTP_201_CREATED)
-
 
 # Client Errors (4xx)
 MISSING_OR_MALFORMED_JSON = \
@@ -31,3 +30,10 @@ SIGNUP_INVALID_ACCOUNT_TYPE = \
 
 USER_ALREADY_EXISTS = \
     _httpcode("Cannot signup, username already exists.", status.HTTP_409_CONFLICT)
+
+USER_DOESNT_EXISTS = \
+    _httpcode("Cannot login, username does not exists.", status.HTTP_404_NOT_FOUND)
+
+WRONG_PASSWORD = \
+    _httpcode("Cannot login, password does not match username.", status.HTTP_403_FORBIDDEN)
+
