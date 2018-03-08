@@ -3,29 +3,37 @@
 # src/database.py
 # Authors:
 #     Samuel Vargas
+#     Alex Gao
 
 from typing import Optional
 from passlib.hash import argon2
 from src.account_types import AccountType
-import sqlite3
+import pyodbc
 
 TABLE_NAME = "User"
 
 CREATE_SCHEMA = """
-CREATE TABLE IF NOT EXISTS {table_name}
-    (username TEXT NOT NULL,
-     password TEXT NOT NULL,
-     account_type INT NOT NULL,
-     PRIMARY KEY(username))
+
+IF NOT EXISTS (SELECT 'X'
+                   FROM   INFORMATION_SCHEMA.TABLES
+                   WHERE  TABLE_NAME = 'User'
+                          AND TABLE_SCHEMA = 'dbo')
+BEGIN
+    CREATE TABLE "{table_name}"
+        (username nvarchar(450) NOT NULL,
+        password nvarchar(450) NOT NULL,
+        account_type INT NOT NULL,
+        PRIMARY KEY(username))
+END
 """.format(table_name=TABLE_NAME)
 
 FIND_USER = """
-SELECT * FROM {table_name} WHERE username=?
+SELECT * FROM "{table_name}" WHERE username=?
 """.format(table_name=TABLE_NAME)
 
 ADD_USER = """
-INSERT INTO {table_name}(username, password, account_type)
- VALUES (?, ?, ?)
+INSERT "{table_name}" (username, password, account_type)
+    VALUES (?, ?, ?)
 """.format(table_name=TABLE_NAME)
 
 UseMemory = ":memory:"
@@ -33,7 +41,7 @@ UseMemory = ":memory:"
 
 class Database:
     def __init__(self, path):
-        self.connection = sqlite3.connect(path)
+        self.connection = pyodbc.connect(path)
         self.cursor = self.connection.cursor()
         self.cursor.execute(CREATE_SCHEMA)
         self.connection.commit()
@@ -58,6 +66,7 @@ class Database:
             return False
 
         self.cursor.execute(ADD_USER, (username, argon2.hash(password), account_type.value))
+        self.connection.commit()
         return True
 
     def close(self) -> None:

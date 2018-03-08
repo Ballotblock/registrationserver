@@ -23,14 +23,21 @@ NAME = "BallotBlock Registration API"
 PORT = 8080
 GREET = "<h1>BallotBlock Registration API WIP</h1>"
 
-db = Database(UseMemory)
+server = 'ballotblock.database.windows.net'
+database = 'BallotBlockUsers'
+username = 'alex'
+password = 'Capstone486'
+driver = '{ODBC Driver 13 for SQL Server}'
+path = 'DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password
+
+db = Database(path)
 
 
 
 # Quick testing to see if server is live
 @app.route("/")
 def index():
-    return "BallotBlock Registration Server"
+    return NAME;
     
 
 

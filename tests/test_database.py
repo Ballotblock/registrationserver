@@ -16,7 +16,14 @@ class DatabaseTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        self.db = Database(UseMemory)
+        server = 'ballotblock.database.windows.net'
+        database = 'BallotBlockUsers'
+        username = 'alex'
+        password = 'Capstone486'
+        driver = '{ODBC Driver 13 for SQL Server}'
+        path = 'DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password
+
+        self.db = Database(path)
         self.user = {
             "username": "Robert');DROP TABLE Users",
             "password": "https://xkcd.com/327/",
