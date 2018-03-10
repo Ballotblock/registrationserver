@@ -12,6 +12,7 @@ from flask import request,make_response
 from src import app
 
 from src.database import Database
+from src.participants import Participants
 from src.database import UseMemory
 from src.account_types import AccountType
 from src import httpcode
@@ -31,6 +32,9 @@ driver = '{ODBC Driver 13 for SQL Server}'
 path = 'DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password
 
 db = Database(path)
+
+hyperledger = "http://13.57.203.209:3000/api/"
+hp = Participants(hyperledger)
 
 
 
@@ -67,10 +71,16 @@ def signup() -> httpcode.HttpCode:
     if not AccountType.isValidType(content['account_type']):
         return httpcode.SIGNUP_INVALID_ACCOUNT_TYPE
 
+    if not hp.add_user(content['username'],
+                AccountType[content['account_type']]):
+        return httpcode.USER_ALREADY_EXISTS_HYPERLEDGER
+
     if not db.add_user(content['username'],
                        content['password'],
                        AccountType[content['account_type']]):
         return httpcode.USER_ALREADY_EXISTS
+
+    
 
     return httpcode.SIGNUP_OK
 
@@ -98,7 +108,6 @@ def login() -> httpcode.HttpCode:
         return httpcode.SIGNUP_MISSING_PARAMETERS
 
     user = db.find_user(content['username'])
-
     # check user exists
     if user == None:
         return httpcode.USER_DOESNT_EXISTS
@@ -114,6 +123,7 @@ def login() -> httpcode.HttpCode:
     # Expires is set to never right now, can be changed in the future to 15 mins or something
     token = {
         'username': content['username'],
+        'account_type': user[2],
         'expires' : 'never'  
         }
     response = make_response(str(token))

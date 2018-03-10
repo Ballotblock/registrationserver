@@ -31,6 +31,9 @@ SIGNUP_INVALID_ACCOUNT_TYPE = \
 USER_ALREADY_EXISTS = \
     _httpcode("Cannot signup, username already exists.", status.HTTP_409_CONFLICT)
 
+USER_ALREADY_EXISTS_HYPERLEDGER = \
+    _httpcode("Cannot signup, username already exists on hyperledger backend.", status.HTTP_409_CONFLICT)
+
 USER_DOESNT_EXISTS = \
     _httpcode("Cannot login, username does not exists.", status.HTTP_404_NOT_FOUND)
 
