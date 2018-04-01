@@ -71,16 +71,10 @@ def signup() -> httpcode.HttpCode:
     if not AccountType.isValidType(content['account_type']):
         return httpcode.SIGNUP_INVALID_ACCOUNT_TYPE
 
-    if not hp.add_user(content['username'],
-                AccountType[content['account_type']]):
-        return httpcode.USER_ALREADY_EXISTS_HYPERLEDGER
-
     if not db.add_user(content['username'],
                        content['password'],
                        AccountType[content['account_type']]):
         return httpcode.USER_ALREADY_EXISTS
-
-    
 
     return httpcode.SIGNUP_OK
 
