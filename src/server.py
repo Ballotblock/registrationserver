@@ -10,18 +10,21 @@ from typing import NamedTuple
 
 from flask import request,make_response
 from src import app
-
+from src.cookie_encryptor import CookieEncryptor
 from src.database import Database
 from src.database import UseMemory
 from src.account_types import AccountType
 from src import httpcode
 from passlib.hash import argon2
+import json
 
 URL = "0.0.0.0"
 DEBUG_URL = "127.0.0.1"
 NAME = "BallotBlock Registration API"
 PORT = 8080
 GREET = "<h1>BallotBlock Registration API WIP</h1>"
+SHARED_PASSWORD = "BallotBlockDefaultPassword" # Change this prior to deploying system.
+COOKIE_ENCRYPTOR = CookieEncryptor(SHARED_PASSWORD)
 
 db = Database(UseMemory)
 
@@ -105,13 +108,15 @@ def login() -> httpcode.HttpCode:
     # Will need to implemented in the future, so clients cannot generate there own tokens and plug into their browsers
     # Also note that the secret used to encrypt here also needs to be the same secret used to decerypt on the BallotBlock-API server (intermediary server)
     # Expires is set to never right now, can be changed in the future to 15 mins or something
-    token = {
+    token = json.dumps({
         'username': content['username'],
+        'account_type': user[2],
         'expires' : 'never'  
-        }
-    response = make_response(str(token))
-    response.set_cookie('token',str(token))
+        }).encode('utf-8')
+
+    token = COOKIE_ENCRYPTOR.encrypt(token).decode('utf-8')
+
+    response = make_response(token)
+    response.set_cookie('token', token)
     response.status_code = 202
     return response
-
-
