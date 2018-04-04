@@ -30,8 +30,9 @@ COOKIE_ENCRYPTOR = CookieEncryptor(SHARED_PASSWORD)
 
 server = 'ballotblock.database.windows.net'
 database = 'BallotBlockUsers'
-username = 'alex'
-password = 'Capstone486'
+# Set username and password prior to deploying
+username = none
+password = none
 driver = '{ODBC Driver 13 for SQL Server}'
 path = 'DRIVER='+driver+';PORT=1433;SERVER='+server+';PORT=1443;DATABASE='+database+';UID='+username+';PWD='+ password
 
