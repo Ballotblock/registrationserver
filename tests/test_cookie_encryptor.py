@@ -19,17 +19,18 @@ class CookieEncryptorTest(unittest.TestCase):
         self.cookie_encryptor = CookieEncryptor(self.secret_password)
 
         # Create an account token
-        self.token = json.dumps({
+        self.token = {
             "username": "Sparky",
             "password": "Student Loans",
             "account_type": AccountType.voter.value
-        }).encode('utf-8')
+        }
 
     def test_can_encrypt_decrypt_cookie(self):
         # Encrypt the token
-        encrypted = self.cookie_encryptor.encrypt(self.token)
-        assert self.token != encrypted
+        uuid = '6862cff6-d5f7-440a-a02e-573c4be9f944'
+        self.token['authentication'] = self.cookie_encryptor.encrypt(uuid.encode('utf-8')).decode('utf-8')
+        assert self.token['authentication'] != uuid
 
         # Decrypt the token
-        decrypted = self.cookie_encryptor.decrypt(encrypted)
-        assert self.token == decrypted
+        decrypted = self.cookie_encryptor.decrypt(self.token['authentication'].encode('utf-8'))
+        assert uuid == decrypted.decode('utf-8')

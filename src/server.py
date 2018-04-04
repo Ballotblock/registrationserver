@@ -18,6 +18,7 @@ from src.account_types import AccountType
 from src import httpcode
 from passlib.hash import argon2
 import json
+import uuid
 
 URL = "0.0.0.0"
 DEBUG_URL = "127.0.0.1"
@@ -118,15 +119,16 @@ def login() -> httpcode.HttpCode:
     # Will need to implemented in the future, so clients cannot generate there own tokens and plug into their browsers
     # Also note that the secret used to encrypt here also needs to be the same secret used to decerypt on the BallotBlock-API server (intermediary server)
     # Expires is set to never right now, can be changed in the future to 15 mins or something
-    token = json.dumps({
+    token = {
         'username': content['username'],
         'account_type': user[2],
         'expires' : 'never'  
-        }).encode('utf-8')
+        }
 
-    token = COOKIE_ENCRYPTOR.encrypt(token).decode('utf-8')
+    # Store an encrypted b64 string in the 'authentication' key of the token
+    token['authentication'] = COOKIE_ENCRYPTOR.encrypt(str(uuid.uuid4()).encode('utf-8')).decode('utf-8')
 
-    response = make_response(token)
+    response = make_response(json.dumps(token))
     response.set_cookie('token', token)
     response.status_code = 202
     return response
